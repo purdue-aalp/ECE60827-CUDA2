@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   run-autograding-tests:
-    runs-on: tgrogers-gpu01
+    runs-on: self-hosted
 
     if: github.actor != 'github-classroom[bot]'
 

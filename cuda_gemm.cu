@@ -44,7 +44,7 @@ __global__ void gemm_shared_kernel(
 }
 
 // =============================================================================
-// C++ Wrapper Functions (DO NOT MODIFY)
+// C++ Wrapper Functions
 // =============================================================================
 
 torch::Tensor gemm_cuda(torch::Tensor A, torch::Tensor B) {

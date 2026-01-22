@@ -1,4 +1,7 @@
+SHELL := /bin/bash
 PYTHON = python3
+MODULES = module load gcc/11.4.1 cuda ngc pytorch
+SRUN = srun -c4 -A gpu --gres=gpu:1
 
 .PHONY: all build clean test help
 
@@ -6,11 +9,11 @@ all: build
 
 # Build the CUDA extension
 build:
-	$(PYTHON) setup.py build_ext --inplace
+	$(SRUN) bash -c '$(MODULES) && $(PYTHON) setup.py build_ext --inplace'
 
 # Run correctness and benchmark tests
 test: build
-	$(PYTHON) test_gemm.py
+	$(SRUN) bash -c '$(MODULES) && $(PYTHON) test_gemm.py'
 
 # Clean build artifacts
 clean:
