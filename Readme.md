@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Large Language Models (LLMs) like GPT and LLaMA are built on the Transformer architecture, which relies heavily on matrix multiplications. The core operations in Transformers—attention mechanisms (Q×K^T, softmax×V) and feed-forward layers—are essentially sequences of GEMMs. In fact, matrix multiplications account for the vast majority of compute in modern LLMs, making GEMM optimization critical for efficient inference and training.
+Large Language Models (LLMs) like GPT and LLaMA are built on the Transformer architecture, which relies heavily on matrix multiplications. The core operations in Transformers—attention mechanisms (Q×K^T, softmax×V) and feed-forward layers—are essentially sequences of GEMMs. In fact, matrix multiplications account for the vast majority of compute in modern LLMs, making GEMM optimization critical for efficient inference and training. See [Matrix Multiplication Background](https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html) for more details.
 
 The purpose of this lab is to deepen your understanding of CUDA programming by implementing General Matrix Multiplication (GEMM). You will implement two versions—a naive approach and an optimized shared memory version—and compare their performance against PyTorch's highly-optimized implementation.
 
