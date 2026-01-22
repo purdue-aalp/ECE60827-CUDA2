@@ -76,11 +76,14 @@ def benchmark():
     print(f"Naive max error:  {naive_error:.6e}")
     print(f"Shared max error: {shared_error:.6e}")
 
+    failed = False
     if naive_error >= 1e-3:
         print(f"FAILED: Naive GEMM error too large: {naive_error}")
-        sys.exit(1)
+        failed = True
     if shared_error >= 1e-3:
         print(f"FAILED: Shared GEMM error too large: {shared_error}")
+        failed = True
+    if failed:
         sys.exit(1)
 
     # Warmup
