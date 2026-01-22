@@ -39,7 +39,7 @@ jobs:
         command: >
           bash -lc '
             module load gcc/11.4.1 cuda ngc pytorch &&
-            srun -c4 -A gpu --gres=gpu:1 python3 test_gemm.py --part-a
+            python3 test_gemm.py --part-a
           '
         timeout: 120
         max-score: 40
@@ -55,7 +55,7 @@ jobs:
         command: >
           bash -lc '
             module load gcc/11.4.1 cuda ngc pytorch &&
-            srun -c4 -A gpu --gres=gpu:1 python3 test_gemm.py --part-b
+            python3 test_gemm.py --part-b
           '
         timeout: 120
         max-score: 40
