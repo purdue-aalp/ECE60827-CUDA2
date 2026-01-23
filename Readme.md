@@ -159,9 +159,17 @@ When you submit your assignment through GitHub Classroom, an autograder will aut
 
 ### Running the Grader Locally
 
+To test each part separately (as the autograder does):
+
 ```bash
-make test
+# Test Part A only
+python3 test_gemm.py --part-a
+
+# Test Part B only
+python3 test_gemm.py --part-b
 ```
+
+Running `make test` will execute the full benchmark, which tests both parts and reports timing comparisons.
 
 -----------------------------------------------------------
 <br>
