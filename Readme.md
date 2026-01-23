@@ -6,7 +6,7 @@
 
 Large Language Models (LLMs) like GPT and LLaMA are built on the Transformer architecture, which relies heavily on matrix multiplications. The core operations in Transformers—attention mechanisms (Q×K^T, softmax×V) and feed-forward layers—are essentially sequences of GEMMs. In fact, matrix multiplications account for the vast majority of compute in modern LLMs, making GEMM optimization critical for efficient inference and training. See [Matrix Multiplication Background](https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html) for more details.
 
-The purpose of this lab is to deepen your understanding of CUDA programming by implementing General Matrix Multiplication (GEMM). You will implement two versions—a naive approach and an optimized shared memory version—and compare their performance against PyTorch's highly-optimized implementation.
+The purpose of this lab is to deepen your understanding of CUDA programming by implementing General Matrix Multiplication (GEMM). You will implement two versions—a naive approach and an optimized shared memory version—and compare their performance against PyTorch's highly-optimized implementation. Beyond learning CUDA itself, this lab helps you understand how widely-used frameworks like PyTorch interact with the underlying GPU hardware. By building your own GEMM kernels and comparing them against PyTorch's implementation, you'll gain insight into the entire software stack—from high-level Python APIs down to low-level GPU execution.
 
 The official [CUDA Documentation](https://docs.nvidia.com/cuda/) is the best resource for implementation details and API specifics.
 
@@ -54,6 +54,39 @@ Each thread computes **one element** of the output matrix C. The thread reads an
 Implement `gemm_shared_kernel` in `cuda_gemm.cu`.
 
 Use **shared memory** to reduce global memory accesses. Threads within a block should cooperatively load data into shared memory before computing.
+
+-----------------------------------------------------------
+<br>
+
+## Repository Structure
+
+This repository demonstrates how Python frameworks like PyTorch integrate with custom CUDA code:
+
+- **`test_gemm.py`** — The Python test script that imports `cuda_gemm` as a module and calls functions like `cuda_gemm.gemm(A, B)` on PyTorch GPU tensors.
+- **`setup.py`** — Defines how the `cuda_gemm` module gets built as a PyTorch C++/CUDA extension.
+- **`cuda_gemm.cu`** — Contains the CUDA kernels you will implement, along with wrapper functions that bridge Python calls to GPU execution.
+
+Understanding this flow—from high-level Python API to low-level CUDA kernel—is a key learning objective of this lab.
+
+### test_gemm.py
+
+| Function | Description |
+|----------|-------------|
+| `test_naive()` | Tests Part A correctness by comparing your naive GEMM output against `torch.mm()` across multiple matrix sizes. |
+| `test_shared()` | Tests Part B correctness by comparing your shared memory GEMM output against `torch.mm()` across multiple matrix sizes. |
+| `benchmark()` | Measures and compares execution time of your implementations against PyTorch's optimized GEMM. |
+
+### cuda_gemm.cu
+
+| Function | Description |
+|----------|-------------|
+| `gemm_kernel` | **[TODO]** The naive CUDA kernel where each thread computes one element of the output matrix. |
+| `gemm_shared_kernel` | **[TODO]** The shared memory CUDA kernel that uses tiling to reduce global memory accesses. |
+| `gemm_cuda()` | C++ wrapper that validates input tensors, configures grid/block dimensions, and launches `gemm_kernel`. |
+| `gemm_shared_cuda()` | C++ wrapper that validates input tensors, configures grid/block dimensions, and launches `gemm_shared_kernel`. |
+
+**Note:** The grid and block dimensions in the wrapper functions can be adjusted as needed for your kernel implementation.
+| `PYBIND11_MODULE` | Registers the C++ functions as Python-callable methods (`cuda_gemm.gemm` and `cuda_gemm.gemm_shared`). See [pybind11 documentation](https://pybind11.readthedocs.io/). |
 
 -----------------------------------------------------------
 <br>
