@@ -58,6 +58,15 @@ Use **shared memory** to reduce global memory accesses. Threads within a block s
 -----------------------------------------------------------
 <br>
 
+## Part C: Loop Unrolling Optimization
+
+Implement `gemm_unrolled_kernel` in `cuda_gemm.cu`.
+
+Build on your shared memory implementation by applying **loop unrolling** to the inner computation loop. Use `#pragma unroll` to hint the compiler to unroll loops, reducing loop overhead and enabling instruction-level parallelism. Your implementation should demonstrate a measurable speedup over the shared memory version.
+
+-----------------------------------------------------------
+<br>
+
 ## Repository Structure
 
 This repository demonstrates how Python frameworks like PyTorch integrate with custom CUDA code:
@@ -74,7 +83,8 @@ Understanding this flow—from high-level Python API to low-level CUDA kernel—
 |----------|-------------|
 | `test_naive()` | Tests Part A correctness by comparing your naive GEMM output against `torch.mm()` across multiple matrix sizes. |
 | `test_shared()` | Tests Part B correctness by comparing your shared memory GEMM output against `torch.mm()` across multiple matrix sizes. |
-| `benchmark()` | Measures and compares execution time of your implementations against PyTorch's optimized GEMM. |
+| `test_unrolled()` | Tests Part C correctness by comparing your loop unrolling GEMM output against `torch.mm()` across multiple matrix sizes. |
+| `benchmark()` | Measures and compares execution time of all three implementations against PyTorch's optimized GEMM. |
 
 ### cuda_gemm.cu
 
@@ -82,11 +92,13 @@ Understanding this flow—from high-level Python API to low-level CUDA kernel—
 |----------|-------------|
 | `gemm_kernel` | **[TODO]** The naive CUDA kernel where each thread computes one element of the output matrix. |
 | `gemm_shared_kernel` | **[TODO]** The shared memory CUDA kernel that uses tiling to reduce global memory accesses. |
+| `gemm_unrolled_kernel` | **[TODO]** The shared memory + loop unrolling CUDA kernel. |
 | `gemm_cuda()` | C++ wrapper that validates input tensors, configures grid/block dimensions, and launches `gemm_kernel`. |
 | `gemm_shared_cuda()` | C++ wrapper that validates input tensors, configures grid/block dimensions, and launches `gemm_shared_kernel`. |
+| `gemm_unrolled_cuda()` | C++ wrapper that validates input tensors, configures grid/block dimensions, and launches `gemm_unrolled_kernel`. |
+| `PYBIND11_MODULE` | Registers the C++ functions as Python-callable methods (`cuda_gemm.gemm`, `cuda_gemm.gemm_shared`, and `cuda_gemm.gemm_unrolled`). See [pybind11 documentation](https://pybind11.readthedocs.io/). |
 
 **Note:** The grid and block dimensions in the wrapper functions can be adjusted as needed for your kernel implementation.
-| `PYBIND11_MODULE` | Registers the C++ functions as Python-callable methods (`cuda_gemm.gemm` and `cuda_gemm.gemm_shared`). See [pybind11 documentation](https://pybind11.readthedocs.io/). |
 
 -----------------------------------------------------------
 <br>
@@ -156,6 +168,7 @@ When you submit your assignment through GitHub Classroom, an autograder will aut
 
 - **Part A - Naive GEMM:** Correctness against PyTorch reference
 - **Part B - Shared Memory GEMM:** Correctness against PyTorch reference
+- **Part C - Loop Unrolling GEMM:** Correctness against PyTorch reference
 
 ### Running the Grader Locally
 
@@ -167,6 +180,9 @@ python3 test_gemm.py --part-a
 
 # Test Part B only
 python3 test_gemm.py --part-b
+
+# Test Part C only
+python3 test_gemm.py --part-c
 ```
 
 Running `make test` will execute the full benchmark, which tests both parts and reports timing comparisons.
@@ -194,17 +210,22 @@ How does a Python call to `cuda_gemm.gemm(A, B)` end up executing your CUDA kern
 
 4. Both your implementations are likely slower than PyTorch's `torch.mm`. Why do you think this happens?
 
-#### Part 3: Further Optimizations
+#### Part 3: Loop Unrolling Analysis
 
-5. Describe **two** additional optimization techniques (beyond shared memory tiling) that could improve GEMM performance. For each technique, explain the underlying principle and expected benefit.
+5. What is loop unrolling and how does `#pragma unroll` work at the compiler level? What trade-offs does it introduce (e.g., instruction cache pressure, register usage)?
+
+6. Compare the performance of your unrolled kernel against the shared memory version. Report the timing results and speedup. Does unrolling help equally for all matrix sizes? Why or why not?
+
+7. Describe **one** additional optimization technique (beyond shared memory tiling and loop unrolling) that could further improve GEMM performance. Explain the underlying principle and expected benefit.
 
 ### Grading Rubric
 
 | Component | Points |
 |-----------|--------|
-| Part A - Naive GEMM | 40 |
-| Part B - Shared Memory GEMM | 40 |
-| Report | 20 |
+| Part A - Naive GEMM | 15 |
+| Part B - Shared Memory GEMM | 15 |
+| Part C - Loop Unrolling GEMM | 40 |
+| Report | 30 |
 | **Total** | **100** |
 
 ### Submission Requirements

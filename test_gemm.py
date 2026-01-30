@@ -54,6 +54,31 @@ def test_shared():
 
     print("\nPart B: All shared memory GEMM tests passed!")
 
+def test_unrolled():
+    """Test Part C: Loop unrolling GEMM correctness."""
+    print("=" * 50)
+    print("Part C: Testing Loop Unrolling GEMM correctness...")
+    print("=" * 50)
+
+    sizes = [(64, 64, 64), (128, 256, 512), (1000, 500, 750), (1024, 1024, 1024)]
+
+    for M, K, N in sizes:
+        A = torch.randn(M, K, device='cuda', dtype=torch.float32)
+        B = torch.randn(K, N, device='cuda', dtype=torch.float32)
+
+        C_ref = torch.mm(A, B)
+        C_unrolled = cuda_gemm.gemm_unrolled(A, B)
+
+        unrolled_error = torch.max(torch.abs(C_ref - C_unrolled)).item()
+
+        print(f"Size ({M}x{K}) x ({K}x{N}): max error = {unrolled_error:.6e}")
+
+        if unrolled_error >= 1e-3:
+            print(f"FAILED: Unrolled GEMM error too large: {unrolled_error}")
+            sys.exit(1)
+
+    print("\nPart C: All loop unrolling GEMM tests passed!")
+
 def benchmark():
     """Benchmark our GEMM against PyTorch."""
     print("\n" + "=" * 50)
@@ -68,13 +93,16 @@ def benchmark():
     C_ref = torch.mm(A, B)
     C_naive = cuda_gemm.gemm(A, B)
     C_shared = cuda_gemm.gemm_shared(A, B)
+    C_unrolled = cuda_gemm.gemm_unrolled(A, B)
 
     naive_error = torch.max(torch.abs(C_ref - C_naive)).item()
     shared_error = torch.max(torch.abs(C_ref - C_shared)).item()
+    unrolled_error = torch.max(torch.abs(C_ref - C_unrolled)).item()
 
     print(f"\nMatrix size: ({M}x{K}) x ({K}x{N})")
-    print(f"Naive max error:  {naive_error:.6e}")
-    print(f"Shared max error: {shared_error:.6e}")
+    print(f"Naive max error:    {naive_error:.6e}")
+    print(f"Shared max error:   {shared_error:.6e}")
+    print(f"Unrolled max error: {unrolled_error:.6e}")
 
     failed = False
     if naive_error >= 1e-3:
@@ -82,6 +110,9 @@ def benchmark():
         failed = True
     if shared_error >= 1e-3:
         print(f"FAILED: Shared GEMM error too large: {shared_error}")
+        failed = True
+    if unrolled_error >= 1e-3:
+        print(f"FAILED: Unrolled GEMM error too large: {unrolled_error}")
         failed = True
     if failed:
         sys.exit(1)
@@ -91,6 +122,7 @@ def benchmark():
         _ = torch.mm(A, B)
         _ = cuda_gemm.gemm(A, B)
         _ = cuda_gemm.gemm_shared(A, B)
+        _ = cuda_gemm.gemm_unrolled(A, B)
 
     torch.cuda.synchronize()
 
@@ -120,22 +152,35 @@ def benchmark():
     torch.cuda.synchronize()
     shared_time = (time.perf_counter() - start) / n_runs * 1000
 
+    # Benchmark unrolled GEMM
+    torch.cuda.synchronize()
+    start = time.perf_counter()
+    for _ in range(n_runs):
+        _ = cuda_gemm.gemm_unrolled(A, B)
+    torch.cuda.synchronize()
+    unrolled_time = (time.perf_counter() - start) / n_runs * 1000
+
     print(f"\nPyTorch mm:    {pytorch_time:.3f} ms")
     print(f"Naive GEMM:    {naive_time:.3f} ms")
     print(f"Shared GEMM:   {shared_time:.3f} ms")
-    print(f"\nSpeedup (shared vs naive): {naive_time/shared_time:.2f}x")
-    print(f"Relative to PyTorch (shared): {pytorch_time/shared_time:.2f}x")
+    print(f"Unrolled GEMM: {unrolled_time:.3f} ms")
+    print(f"\nSpeedup (shared vs naive):     {naive_time/shared_time:.2f}x")
+    print(f"Speedup (unrolled vs shared):  {shared_time/unrolled_time:.2f}x")
+    print(f"Relative to PyTorch (unrolled): {pytorch_time/unrolled_time:.2f}x")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Test CUDA GEMM implementations')
     parser.add_argument('--part-a', action='store_true', help='Test Part A: Naive GEMM only')
     parser.add_argument('--part-b', action='store_true', help='Test Part B: Shared memory GEMM only')
+    parser.add_argument('--part-c', action='store_true', help='Test Part C: Loop unrolling GEMM only')
     args = parser.parse_args()
 
     if args.part_a:
         test_naive()
     elif args.part_b:
         test_shared()
+    elif args.part_c:
+        test_unrolled()
     else:
         # No argument provided: run benchmark
         benchmark()

@@ -29,33 +29,49 @@ jobs:
         srun -c4 -A gpu --gres=gpu:1 bash -c 'module load gcc/11.4.1 cuda ngc pytorch && python3 setup.py build_ext --inplace'
 
     # -----------------------------
-    # Part A: Naive GEMM (40 points)
+    # Part A: Naive GEMM (15 points)
     # -----------------------------
     - name: Part A - Naive GEMM
       id: part-a
       uses: classroom-resources/autograding-command-grader@v1
       with:
-        test-name: "Part A - Naive GEMM (40 points)"
+        test-name: "Part A - Naive GEMM (15 points)"
         command: >
           bash -lc '
             module load gcc/11.4.1 cuda ngc pytorch &&
             python3 test_gemm.py --part-a
           '
         timeout: 120
-        max-score: 40
+        max-score: 15
 
     # -----------------------------
-    # Part B: Shared Memory GEMM (40 points)
+    # Part B: Shared Memory GEMM (15 points)
     # -----------------------------
     - name: Part B - Shared Memory GEMM
       id: part-b
       uses: classroom-resources/autograding-command-grader@v1
       with:
-        test-name: "Part B - Shared Memory GEMM (40 points)"
+        test-name: "Part B - Shared Memory GEMM (15 points)"
         command: >
           bash -lc '
             module load gcc/11.4.1 cuda ngc pytorch &&
             python3 test_gemm.py --part-b
+          '
+        timeout: 120
+        max-score: 15
+
+    # -----------------------------
+    # Part C: Loop Unrolling GEMM (40 points)
+    # -----------------------------
+    - name: Part C - Loop Unrolling GEMM
+      id: part-c
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Part C - Loop Unrolling GEMM (40 points)"
+        command: >
+          bash -lc '
+            module load gcc/11.4.1 cuda ngc pytorch &&
+            python3 test_gemm.py --part-c
           '
         timeout: 120
         max-score: 40
@@ -68,5 +84,6 @@ jobs:
       env:
         PART-A_RESULTS: "${{ steps.part-a.outputs.result }}"
         PART-B_RESULTS: "${{ steps.part-b.outputs.result }}"
+        PART-C_RESULTS: "${{ steps.part-c.outputs.result }}"
       with:
-        runners: part-a,part-b
+        runners: part-a,part-b,part-c
