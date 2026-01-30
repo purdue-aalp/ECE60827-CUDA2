@@ -1,5 +1,7 @@
 # ECE 60827 CUDA Part 2 - Report
 
+**Please write all your answers directly in this `report.md` file. Do not create a separate PDF or other document.**
+
 ---
 
 ## Part 1: Understanding the Codebase
@@ -43,13 +45,13 @@
 
 ### Question 5
 
-**What is loop unrolling and how does `#pragma unroll` work at the compiler level? What trade-offs does it introduce (e.g., instruction cache pressure, register usage)?**
+**What is loop unrolling and how does it help?  What trade-offs does it introduce (e.g., instruction cache pressure, register usage)?**
 
 <!-- Your answer here -->
 
 ### Question 6
 
-**Compare the performance of your unrolled kernel against the shared memory version. Report the timing results and speedup. Does unrolling help equally for all matrix sizes? Why or why not?**
+**Compare the performance of your unrolled kernel against the shared memory version. Do you see any speedup? Why or Why not?**
 
 <!-- Your answer here -->
 
@@ -61,6 +63,6 @@
 
 ### Question 8
 
-**Write a separate Python script that runs your three GEMM implementations and PyTorch's `torch.mm` using FP16 (`torch.float16`) tensors instead of FP32. Report the timing results for all four. What happens to PyTorch's performance compared to FP32? What happens to your kernels' performance? Explain why PyTorch sees a significant speedup with FP16 while your custom kernels do not.**
+**Write a separate Python script that runs your three GEMM implementations and PyTorch's `torch.mm` using FP16 (`torch.float16`) tensors instead of FP32. Report the timing results for all four. What happens to PyTorch's performance compared to FP32? What happens to your kernels' performance? Explain why PyTorch sees a significant speedup with FP16 while your custom kernels do not. (hint: Some special hardware in Volta can only do FP16, but not FP32.)**
 
 <!-- Paste your FP16 timing results and explanation here -->

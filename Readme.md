@@ -60,9 +60,7 @@ Use **shared memory** to reduce global memory accesses. Threads within a block s
 
 ## Part C: Loop Unrolling Optimization
 
-Implement `gemm_unrolled_kernel` in `cuda_gemm.cu`.
-
-Build on your shared memory implementation by applying **loop unrolling** to the inner computation loop. Use `#pragma unroll` to hint the compiler to unroll loops, reducing loop overhead and enabling instruction-level parallelism. Your implementation should demonstrate a measurable speedup over the shared memory version.
+Build on your shared memory tiled GEMM implementation by manually unrolling the inner computation loop. Instead of relying solely on the compiler’s automatic unrolling, explicitly expand multiple loop iterations within the loop body to reduce loop overhead and expose additional instruction-level parallelism (ILP). You may use `#pragma unroll` to assist the compiler, but manual unrolling is required.
 
 -----------------------------------------------------------
 <br>
@@ -192,6 +190,8 @@ Running `make test` will execute the full benchmark, which tests both parts and 
 
 ## Report
 
+**Please write all your answers directly in the `report.md` file. Do not create a separate PDF or other document.**
+
 ### Report Questions
 
 Answer the following questions in your report. Read through all provided files (`cuda_gemm.cu`, `setup.py`, `test_gemm.py`) carefully before answering. Keep each answer concise—a few sentences is sufficient unless the question asks for data or code.
@@ -212,11 +212,13 @@ How does a Python call to `cuda_gemm.gemm(A, B)` end up executing your CUDA kern
 
 #### Part 3: Loop Unrolling Analysis
 
-5. What is loop unrolling and how does `#pragma unroll` work at the compiler level? What trade-offs does it introduce (e.g., instruction cache pressure, register usage)?
+5. What is loop unrolling and how does it help?  What trade-offs does it introduce (e.g., instruction cache pressure, register usage)?
 
-6. Compare the performance of your unrolled kernel against the shared memory version. Report the timing results and speedup. Does unrolling help equally for all matrix sizes? Why or why not?
+6. Compare the performance of your unrolled kernel against the shared memory version. Do you see any speedup? Why or Why not?
 
 7. Describe **one** additional optimization technique (beyond shared memory tiling and loop unrolling) that could further improve GEMM performance. Explain the underlying principle and expected benefit.
+
+#### Part 4: FP16
 
 8. Write a separate Python script that runs your three GEMM implementations and PyTorch's `torch.mm` using **FP16** (`torch.float16`) tensors instead of FP32. You can create FP16 tensors like this:
 
@@ -224,7 +226,9 @@ How does a Python call to `cuda_gemm.gemm(A, B)` end up executing your CUDA kern
     A = torch.randn(M, K, device='cuda', dtype=torch.float16)
     ```
 
-    Report the timing results for all four. What happens to PyTorch's performance compared to FP32? What happens to your kernels' performance? Explain why PyTorch sees a significant speedup with FP16 while your custom kernels do not.
+    Report the timing results for all four. What happens to PyTorch's performance compared to FP32? What happens to your kernels' performance? Explain why PyTorch sees a significant speedup with FP16 while your custom kernels do not. 
+
+    **(hint: Some special hardware in Volta can only do FP16, but not FP32.)**
 
 ### Grading Rubric
 
