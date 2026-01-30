@@ -79,7 +79,7 @@ torch::Tensor gemm_cuda(torch::Tensor A, torch::Tensor B) {
     dim3 blocks((N + BLOCK_SIZE - 1) / BLOCK_SIZE,
                 (M + BLOCK_SIZE - 1) / BLOCK_SIZE);
 
-    AT_DISPATCH_FLOATING_TYPES(A.scalar_type(), "gemm_cuda", ([&] {
+    AT_DISPATCH_FLOATING_TYPES_AND_HALF(A.scalar_type(), "gemm_cuda", ([&] {
         gemm_kernel<scalar_t><<<blocks, threads>>>(
             A.data_ptr<scalar_t>(),
             B.data_ptr<scalar_t>(),
@@ -108,7 +108,7 @@ torch::Tensor gemm_shared_cuda(torch::Tensor A, torch::Tensor B) {
     dim3 blocks((N + BLOCK_SIZE - 1) / BLOCK_SIZE,
                 (M + BLOCK_SIZE - 1) / BLOCK_SIZE);
 
-    AT_DISPATCH_FLOATING_TYPES(A.scalar_type(), "gemm_shared_cuda", ([&] {
+    AT_DISPATCH_FLOATING_TYPES_AND_HALF(A.scalar_type(), "gemm_shared_cuda", ([&] {
         gemm_shared_kernel<scalar_t><<<blocks, threads>>>(
             A.data_ptr<scalar_t>(),
             B.data_ptr<scalar_t>(),
@@ -137,7 +137,7 @@ torch::Tensor gemm_unrolled_cuda(torch::Tensor A, torch::Tensor B) {
     dim3 blocks((N + BLOCK_SIZE - 1) / BLOCK_SIZE,
                 (M + BLOCK_SIZE - 1) / BLOCK_SIZE);
 
-    AT_DISPATCH_FLOATING_TYPES(A.scalar_type(), "gemm_unrolled_cuda", ([&] {
+    AT_DISPATCH_FLOATING_TYPES_AND_HALF(A.scalar_type(), "gemm_unrolled_cuda", ([&] {
         gemm_unrolled_kernel<scalar_t><<<blocks, threads>>>(
             A.data_ptr<scalar_t>(),
             B.data_ptr<scalar_t>(),

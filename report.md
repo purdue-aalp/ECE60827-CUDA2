@@ -1,8 +1,5 @@
 # ECE 60827 CUDA Part 2 - Report
 
-**Name:**
-**Email:**
-
 ---
 
 ## Part 1: Understanding the Codebase
@@ -19,7 +16,7 @@
 
 **Run `make test` and report the timing results. How does the shared memory version compare to the naive version? What speedup do you observe?**
 
-<!-- Paste your make test output and analysis here -->
+<!-- Your answer here -->
 
 
 ### Question 2
@@ -61,3 +58,9 @@
 **Describe one additional optimization technique (beyond shared memory tiling and loop unrolling) that could further improve GEMM performance. Explain the underlying principle and expected benefit.**
 
 <!-- Your answer here -->
+
+### Question 8
+
+**Write a separate Python script that runs your three GEMM implementations and PyTorch's `torch.mm` using FP16 (`torch.float16`) tensors instead of FP32. Report the timing results for all four. What happens to PyTorch's performance compared to FP32? What happens to your kernels' performance? Explain why PyTorch sees a significant speedup with FP16 while your custom kernels do not.**
+
+<!-- Paste your FP16 timing results and explanation here -->

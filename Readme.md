@@ -194,7 +194,7 @@ Running `make test` will execute the full benchmark, which tests both parts and 
 
 ### Report Questions
 
-Answer the following questions in your report. Read through all provided files (`cuda_gemm.cu`, `setup.py`, `test_gemm.py`) carefully before answering.
+Answer the following questions in your report. Read through all provided files (`cuda_gemm.cu`, `setup.py`, `test_gemm.py`) carefully before answering. Keep each answer concise—a few sentences is sufficient unless the question asks for data or code.
 
 #### Part 1: Understanding the Codebase
 
@@ -217,6 +217,14 @@ How does a Python call to `cuda_gemm.gemm(A, B)` end up executing your CUDA kern
 6. Compare the performance of your unrolled kernel against the shared memory version. Report the timing results and speedup. Does unrolling help equally for all matrix sizes? Why or why not?
 
 7. Describe **one** additional optimization technique (beyond shared memory tiling and loop unrolling) that could further improve GEMM performance. Explain the underlying principle and expected benefit.
+
+8. Write a separate Python script that runs your three GEMM implementations and PyTorch's `torch.mm` using **FP16** (`torch.float16`) tensors instead of FP32. You can create FP16 tensors like this:
+
+    ```python
+    A = torch.randn(M, K, device='cuda', dtype=torch.float16)
+    ```
+
+    Report the timing results for all four. What happens to PyTorch's performance compared to FP32? What happens to your kernels' performance? Explain why PyTorch sees a significant speedup with FP16 while your custom kernels do not.
 
 ### Grading Rubric
 
